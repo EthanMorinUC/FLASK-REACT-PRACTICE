@@ -1,0 +1,50 @@
+import React from "react";
+import QuizLarge from "./components/QuizLarge";
+import AccessibilityToggle from "./components/AccessibilityToggle";
+import TTSQuickTest from "./components/TTSQuickTest";
+
+// Resolve a possibly-wrapped module (module namespace with `.default`) into the
+// underlying export. This handles layers of interop where the default export
+// may be nested like `{ default: { default: Component } }` due to transforms.
+function resolveModule(mod, depth = 0) {
+  if (!mod || depth > 10) return mod; // guard against cycles
+  if (typeof mod === "object" && "default" in mod) return resolveModule(mod.default, depth + 1);
+  return mod;
+}
+
+const AccessibilityToggleComponent = resolveModule(AccessibilityToggle);
+const QuizLargeComponent = resolveModule(QuizLarge);
+const TTSQuickTestComponent = resolveModule(TTSQuickTest);
+
+// Debugging info (helpful when diagnosing export/import interop problems)
+console.log("AccessibilityToggle (resolved type):", typeof AccessibilityToggleComponent, AccessibilityToggleComponent);
+console.log("QuizLarge (resolved type):", typeof QuizLargeComponent, QuizLargeComponent);
+
+function App() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-purple-800">
+      <header className="py-4 px-6 bg-black/20">
+        <h1 className="text-3xl font-bold text-white">AUXESIS</h1>
+        <p className="text-purple-200 mt-1">Adaptive Learning for Everyone</p>
+      </header>
+      
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <AccessibilityToggleComponent />
+        </div>
+        
+        <div className="grid gap-8 md:grid-cols-[2fr,1fr]">
+          <div className="bg-white/10 rounded-xl p-6 backdrop-blur">
+            <QuizLarge />
+          </div>
+          
+          <div className="space-y-6">
+            <TTSQuickTestComponent />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default App;
