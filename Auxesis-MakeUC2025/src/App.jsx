@@ -6,6 +6,31 @@ import LeaderboardCard from "./components/LeaderboardCard";
 import Mascot from "./components/Mascot";
 
 function App() {
+ function HiButton() {
+  const [response, setResponse] = useState("");
+
+  const handleClick = () => {
+    fetch("/button-press", { method: "POST" })
+      .then(res => res.json())
+      .then(data => setResponse(data.message))
+      .catch(console.error);
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>hi</button>
+      {response && <p>{response}</p>}
+    </div>
+  );
+}
+  const [thankYouMessage, setThankYouMessage] = useState("");
+  const handleButtonClick = () => {
+    fetch("/button-press", { method: "POST" })
+      .then(res => res.json())
+      .then(data => setThankYouMessage(data.message))
+      .catch(console.error);
+  };
+
   const [page, setPage] = useState("reader"); // 'reader' or 'quiz'
   const [isDyslexiaMode, setIsDyslexiaMode] = useState(() => {
     try {

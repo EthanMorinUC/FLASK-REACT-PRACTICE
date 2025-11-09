@@ -969,7 +969,8 @@ strong, b {
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 480px) {
   html {
-    font-size: var(--font-size-sm);
+      font-size: var(--font-size-sm);
+    }
   }
   
   body {

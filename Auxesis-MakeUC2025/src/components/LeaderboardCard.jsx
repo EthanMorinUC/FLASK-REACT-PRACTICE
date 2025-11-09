@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const ARCADE_RANKS = ["👑", "🏆", "🎮", "🕹️", "🎲", "🎯", "⭐", "💫", "✨", "🌟"];
 
-const leaderboard = [
+const INITIAL_PLAYERS = [
   { name: "Elaine (MakeUC)", score: 996 },
   { name: "Quan#2 (MakeUC)", score: 988 },
   { name: "Katy (Mentor)", score: 955 },
@@ -26,8 +26,8 @@ export default function LeaderboardCard() {
 
   // Generate initial leaderboard
   useEffect(() => {
-    const initial = names
-      .map(name => ({ name, score: generateScore() }))
+    const initial = INITIAL_PLAYERS
+      .map(player => ({ name: player.name, score: generateScore() }))
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
     setLeaderboard(initial);
@@ -35,22 +35,38 @@ export default function LeaderboardCard() {
 
   // Update random score every few seconds
   useEffect(() => {
+    if (leaderboard.length === 0) return; // Don't run until leaderboard is populated
+    
     const interval = setInterval(() => {
-      const indexToUpdate = Math.floor(Math.random() * 10);
+      const indexToUpdate = Math.floor(Math.random() * leaderboard.length);
       const newScore = generateScore();
       
       setLeaderboard(prev => {
         const updated = [...prev];
         updated[indexToUpdate] = { ...updated[indexToUpdate], score: newScore };
-        return updated.sort((a, b) => b.score - a.score);
+        const sorted = updated.sort((a, b) => b.score - a.score);
+        
+        // Find new index after sorting
+        const newIndex = sorted.findIndex(p => p.name === updated[indexToUpdate].name);
+        setHighlightIndex(newIndex);
+        
+        return sorted;
       });
       
-      setHighlightIndex(indexToUpdate);
       setTimeout(() => setHighlightIndex(-1), 1000);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [leaderboard.length]); // Only re-run when leaderboard is populated
+
+  // Show loading state while leaderboard is empty
+  if (leaderboard.length === 0) {
+    return (
+      <div className="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden border-2 border-purple-500/50 shadow-[0_0_15px_rgba(147,51,234,0.3)] p-8 text-center">
+        <p className="text-purple-300">Loading leaderboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden border-2 border-purple-500/50 shadow-[0_0_15px_rgba(147,51,234,0.3)]">
